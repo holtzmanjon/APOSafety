@@ -1,13 +1,14 @@
 from socket import *
+import pdb
 from datetime import datetime
 import time
-from logging import logger
+from logging import Logger
 
 messout = b"all"
 
 class Safety :
 
-    def __init__(self, logger : Logger, use35m=True, use25m=False) :
+    def __init__(self, logger=None, use35m=True, use25m=False) :
         """  Initialize safety properties and capabilities
         """
         self.connected = True
@@ -30,7 +31,10 @@ class Safety :
         stuff = messin[start:stop].replace ("=","='").replace (" ","'; ")
 
         # exec - causes the pieces to become global variables
-        exec(stuff)
+        ldict={}
+        exec(stuff,globals(),ldict)
+        encl35m=ldict['encl35m']
+        encl25m=ldict['encl25m']
 
         try:
             encl35m

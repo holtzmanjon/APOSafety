@@ -54,7 +54,7 @@ safety_dev = None
 def start_safety_device(logger: logger):
     logger = logger
     global safety_dev
-    safety_dev = Safety(logger)
+    safety_dev = Safety(logger=logger)
 
 # --------------------
 # RESOURCE CONTROLLERS
