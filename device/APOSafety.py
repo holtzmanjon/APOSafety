@@ -59,7 +59,7 @@ class Safety :
         if ( encl25m == "-1" ) :
             stat25m="unknown"
             if self.use25m : safe=False
-        elif ( encl25m == "16" ) :
+        elif ( encl25m == "1" ) :
             stat25m="open"
             safe25m = True
         else:
