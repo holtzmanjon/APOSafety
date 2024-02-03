@@ -8,12 +8,13 @@ messout = b"all"
 
 class Safety :
 
-    def __init__(self, logger=None, use35m=True, use25m=False) :
+    def __init__(self, logger=None, use35m=True, use25m=False, warnonly=False) :
         """  Initialize safety properties and capabilities
         """
         self.connected = True
         self.use35m = use35m
         self.use25m = use25m
+        self.warnonly = warnonly
 
     def issafe(self) :
 
@@ -35,6 +36,7 @@ class Safety :
         exec(stuff,globals(),ldict)
         encl35m=ldict['encl35m']
         encl25m=ldict['encl25m']
+        print(stuff)
 
         try:
             encl35m
@@ -56,6 +58,7 @@ class Safety :
             encl25m = "-1"
 
         safe25m = False
+        #print('encl25m: ', encl25m)
         if ( encl25m == "-1" ) :
             stat25m="unknown"
             if self.use25m : safe=False
@@ -67,6 +70,8 @@ class Safety :
 
         now=datetime.now()
         print("Enclosure: 3.5m",stat35m,", 2.5m",stat25m, "at",now.strftime("%d/%m/%Y %H:%M:%S"))
+
+        if self.warnonly: return True
 
         if self.use35m and self.use25m :
             return safe35m and safe25m
