@@ -70,7 +70,7 @@ class Safety :
 
         return stat35m, stat25m
 
-    def encl25Open(self,verbose=False):
+    def oldencl25Open(self,verbose=False):
         """ Get 2.5m status from 10.25.1.139
         """
         try :
@@ -86,11 +86,37 @@ class Safety :
         except :
             return "unknown"
 
+    def encl25Open(self,verbose=False) :
+
+        conn = create_connection(("10.25.1.139", 19991))
+        buffer = b""
+
+        while True:
+            data = conn.recv(1024)
+            buffer += data
+
+            if b"\n" in data:
+                response = eval(buffer[0 : buffer.index(b"\n")].decode())
+                buffer = buffer[buffer.index(b"\n") + 1 :]
+                print(response) # Or do anything with it
+                break
+        
+        bldg_clear_az = (response["plc_words_158"] & 0x10) != 0
+        bldg_clear_alt = (response["plc_words_157"] & 0x02) != 0
+
+        if bldg_clear_az & bldg_clear_alt:
+            return "open"  # 1 means open
+
+        return "closed"  # 0 means closed
+
+
     def issafe(self,verbose=False) :
         """ Return whether is safe to be open based on 3.5m/2.5m as set up
         """
-        stat35m, stat25m = self.stat(verbose=verbose)
-        stat25m = self.encl25Open(verbose=verbose)
+        try: stat35m, stat25m = self.stat(verbose=verbose)
+        except : stat35m = 'unknown'
+        try :stat25m = self.encl25Open(verbose=verbose)
+        except : stat25m = 'unknown'
 
         safe25m = False
         safe35m = False
@@ -109,6 +135,3 @@ class Safety :
         else :
             return False
 
-
-
- 
