@@ -72,7 +72,7 @@ from shr import set_shr_logger
 #########################
 # FOR EACH ASCOM DEVICE #
 #########################
-import safetydevice
+import safetymonitor
 
 #--------------
 API_VERSION = 1

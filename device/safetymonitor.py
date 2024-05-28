@@ -83,9 +83,9 @@ class commandstring:
 @before(PreProcessRequest(maxdev))
 class connected:
     def on_get(self, req: Request, resp: Response, devnum: int):
-            # -------------------------------
-            is_conn = safety.connected  ### READ CONN STATE ###
-            # -------------------------------
+        # -------------------------------
+        is_conn = safety.connected  ### READ CONN STATE ###
+        # -------------------------------
         resp.text = PropertyResponse(is_conn, req).json
 
     def on_put(self, req: Request, resp: Response, devnum: int):
@@ -133,7 +133,7 @@ class supportedactions:
 class issafe:
 
     def on_get(self, req: Request, resp: Response, devnum: int):
-        if not ##IS DEV CONNECTED##:
+        if not saftey.connected : ##IS DEV CONNECTED##:
             resp.text = PropertyResponse(None, req,
                             NotConnectedException()).json
             return
