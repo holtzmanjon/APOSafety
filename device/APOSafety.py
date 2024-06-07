@@ -9,7 +9,7 @@ messout = b"all"
 
 class Safety :
 
-    def __init__(self, logger=None, use35m=True, use25m=False, warnonly=False) :
+    def __init__(self, logger=None, use35m=True, use25m=True, warnonly=False) :
         """  Initialize safety properties and capabilities
         """
         self.connected = True
@@ -100,7 +100,6 @@ class Safety :
             if b"\n" in data:
                 response = eval(buffer[0 : buffer.index(b"\n")].decode())
                 buffer = buffer[buffer.index(b"\n") + 1 :]
-                print(response) # Or do anything with it
                 break
         
         bldg_clear_az = (response["plc_words_158"] & 0x10) != 0
