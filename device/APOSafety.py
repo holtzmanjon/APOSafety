@@ -17,6 +17,26 @@ class Safety :
         self.use25m = use25m
         self.warnonly = warnonly
 
+    def override(self,verbose=False) :
+        """ Get override from 10.75.0.19
+        """
+
+        sock = socket(AF_INET, SOCK_DGRAM)
+        sock.settimeout(2)
+        sock.sendto(messout, ('10.75.0.19', 6251))
+        messin='close'
+        try: 
+            messin, server = sock.recvfrom(1024)
+            print('received: ',messin)
+            messin=messin.decode()
+        except timeout: 
+            print('timeout')
+            pass
+        sock.close()
+        print('messin: ', messin)
+        if messin == 'open' : return True
+        else : return False
+
     def stat(self,verbose=False) :
         """ Get 3.5m and 2.5m status from 10.75.0.152
         """
@@ -127,7 +147,7 @@ class Safety :
         now=datetime.now()
         print("Enclosure: 3.5m",stat35m,", 2.5m",stat25m, "at",now.strftime("%d/%m/%Y %H:%M:%S"))
 
-        if self.warnonly: return True
+        if self.override() or self.warnonly: return True
 
         if self.use35m and self.use25m :
             return safe35m or safe25m
