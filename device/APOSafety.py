@@ -145,7 +145,7 @@ class Safety :
         if stat25m == "open" : safe25m = True
 
         now=datetime.now()
-        print("Enclosure: 3.5m",stat35m,", 2.5m",stat25m, "at",now.strftime("%d/%m/%Y %H:%M:%S"))
+        print("Enclosure: 3.5m",stat35m,", 2.5m",stat25m,", override",self.override(), " at",now.strftime("%d/%m/%Y %H:%M:%S"))
 
         if self.override() or self.warnonly: return True
 
