@@ -27,13 +27,10 @@ class Safety :
         messin='close'
         try: 
             messin, server = sock.recvfrom(1024)
-            print('received: ',messin)
             messin=messin.decode()
         except timeout: 
-            print('timeout')
             pass
         sock.close()
-        print('messin: ', messin)
         if messin == 'open' : return True
         else : return False
 
