@@ -37,7 +37,6 @@ class Safety :
     def stat(self,verbose=False) :
         """ Get 3.5m and 2.5m status from 10.75.0.152
         """
-
         sock = socket(AF_INET, SOCK_DGRAM)
         sock.sendto(messout, ('10.75.0.152', 6251))
         messin, server = sock.recvfrom(1024)

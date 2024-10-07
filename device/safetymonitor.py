@@ -63,7 +63,23 @@ def start_safety_device(logger: logger):
 @before(PreProcessRequest(maxdev))
 class action:
     def on_put(self, req: Request, resp: Response, devnum: int):
+        print('action on_put')
         resp.text = MethodResponse(req, NotImplementedException()).json
+
+    def on_get(self, req: Request, resp: Response, devnum: int):
+        print('action on_get')
+        if not safety_dev.connected : ##IS DEV CONNECTED##:
+            resp.text = PropertyResponse(None, req,
+                            NotConnectedException()).json
+            return
+        try:
+            # ----------------------
+            val = safety_dev.issafe() ## GET PROPERTY ##
+            # ----------------------
+            resp.text = PropertyResponse(val, req).json
+        except Exception as ex:
+            resp.text = PropertyResponse(None, req,
+                            DriverException(0x500, 'Safetymonitor.Issafe failed', ex)).json
 
 @before(PreProcessRequest(maxdev))
 class commandblind:
@@ -83,14 +99,12 @@ class commandstring:
 @before(PreProcessRequest(maxdev))
 class connected:
     def on_get(self, req: Request, resp: Response, devnum: int):
-        print('on_get')
         # -------------------------------
         is_conn = safety_dev.connected  ### READ CONN STATE ###
         # -------------------------------
         resp.text = PropertyResponse(is_conn, req).json
 
     def on_put(self, req: Request, resp: Response, devnum: int):
-        print('on_put')
         conn_str = get_request_field('Connected', req)
         conn = to_bool(conn_str)              # Raises 400 Bad Request if str to bool fails
         try:
@@ -129,7 +143,7 @@ class name():
 @before(PreProcessRequest(maxdev))
 class supportedactions:
     def on_get(self, req: Request, resp: Response, devnum: int):
-        resp.text = PropertyResponse([], req).json  # Not PropertyNotImplemented
+        resp.text = PropertyResponse(['override'], req).json  # Not PropertyNotImplemented
 
 @before(PreProcessRequest(maxdev))
 class issafe:
@@ -141,7 +155,7 @@ class issafe:
             return
         try:
             # ----------------------
-            val = APOSafety.issafe ## GET PROPERTY ##
+            val = safety_dev.issafe() ## GET PROPERTY ##
             # ----------------------
             resp.text = PropertyResponse(val, req).json
         except Exception as ex:

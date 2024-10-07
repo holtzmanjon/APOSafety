@@ -247,7 +247,7 @@ def main():
     #########################
     # FOR EACH ASCOM DEVICE #
     #########################
-    init_routes(falc_app, 'safety', safetymonitor)
+    init_routes(falc_app, 'safetymonitor', safetymonitor)
     #
     # Initialize routes for Alpaca support endpoints
     falc_app.add_route('/management/apiversions', management.apiversions())
