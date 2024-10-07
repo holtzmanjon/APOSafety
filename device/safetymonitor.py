@@ -14,7 +14,7 @@
 
 from falcon import Request, Response, HTTPBadRequest, before
 from logging import Logger
-import APOSafety
+from APOSafety import Safety
 from shr import PropertyResponse, MethodResponse, PreProcessRequest, \
                 get_request_field, to_bool
 from exceptions import *        # Nothing but exception classes
@@ -37,7 +37,7 @@ maxdev = 0                      # Single instance
 # Static metadata not subject to configuration changes
 class SafetymonitorMetadata:
     """ Metadata describing the Safetymonitor Device. Edit for your device"""
-    Name = 'APO Safety Monitory'
+    Name = 'APO Safety Monitor'
     Version = '0.0.1 '
     Description = 'APO Safetymonitor'
     DeviceType = 'Safetymonitor'
@@ -83,12 +83,14 @@ class commandstring:
 @before(PreProcessRequest(maxdev))
 class connected:
     def on_get(self, req: Request, resp: Response, devnum: int):
+        print('on_get')
         # -------------------------------
-        is_conn = safety.connected  ### READ CONN STATE ###
+        is_conn = safety_dev.connected  ### READ CONN STATE ###
         # -------------------------------
         resp.text = PropertyResponse(is_conn, req).json
 
     def on_put(self, req: Request, resp: Response, devnum: int):
+        print('on_put')
         conn_str = get_request_field('Connected', req)
         conn = to_bool(conn_str)              # Raises 400 Bad Request if str to bool fails
         try:
@@ -133,7 +135,7 @@ class supportedactions:
 class issafe:
 
     def on_get(self, req: Request, resp: Response, devnum: int):
-        if not saftey.connected : ##IS DEV CONNECTED##:
+        if not safety_dev.connected : ##IS DEV CONNECTED##:
             resp.text = PropertyResponse(None, req,
                             NotConnectedException()).json
             return

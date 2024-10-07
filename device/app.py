@@ -217,14 +217,14 @@ def main():
     # Share this logger throughout
     log.logger = logger
     exceptions.logger = logger
-    safety.start_safety_device(logger)
+    safetymonitor.start_safety_device(logger)
     discovery.logger = logger
     set_shr_logger(logger)
 
     #########################
     # FOR EACH ASCOM DEVICE #
     #########################
-    safety.logger = logger
+    safetymonitor.logger = logger
 
     # -----------------------------
     # Last-Chance Exception Handler
@@ -247,7 +247,7 @@ def main():
     #########################
     # FOR EACH ASCOM DEVICE #
     #########################
-    init_routes(falc_app, 'safety', safety)
+    init_routes(falc_app, 'safety', safetymonitor)
     #
     # Initialize routes for Alpaca support endpoints
     falc_app.add_route('/management/apiversions', management.apiversions())
