@@ -4,6 +4,7 @@ from datetime import datetime
 import time
 from logging import Logger
 import re
+import timer
 
 messout = b"all"
 
@@ -16,8 +17,26 @@ class Safety :
         self.use35m = use35m
         self.use25m = use25m
         self.warnonly = warnonly
+        self.override_timer = None
+        self.override_time = 0
 
-    def override(self,verbose=False) :
+    def setoverride(self,time) :
+        self.override_timer = timer.Timer()
+        self.override_timer.start()
+        self.override_time = time
+
+    def override(self) :
+        if (self.override_timer is not None and 
+            self.override_timer.elapsed()<self.override_time ) :
+            # if we have a timer set and overrid time hasn't expired 
+            return True
+        elif self.override_timer is not None :
+            # if we've passed override time, dispose of timer 
+            self.override_timer = None
+        return False
+
+
+    def old_override(self,verbose=False) :
         """ Get override from 10.75.0.19
         """
 

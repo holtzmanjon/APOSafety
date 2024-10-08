@@ -59,27 +59,29 @@ def start_safety_device(logger: logger):
 # --------------------
 # RESOURCE CONTROLLERS
 # --------------------
-
+import pdb
 @before(PreProcessRequest(maxdev))
 class action:
     def on_put(self, req: Request, resp: Response, devnum: int):
-        print('action on_put')
         resp.text = MethodResponse(req, NotImplementedException()).json
-
-    def on_get(self, req: Request, resp: Response, devnum: int):
-        print('action on_get')
         if not safety_dev.connected : ##IS DEV CONNECTED##:
             resp.text = PropertyResponse(None, req,
                             NotConnectedException()).json
             return
         try:
-            # ----------------------
-            val = safety_dev.issafe() ## GET PROPERTY ##
-            # ----------------------
-            resp.text = PropertyResponse(val, req).json
+            if req.get_media()['Action'] == 'stat35m' :
+                val,val2 = safety_dev.stat() 
+                resp.text = PropertyResponse(val, req).json
+            elif req.get_media()['Action'] == 'stat25m' :
+                val = safety_dev.encl25Open() 
+                resp.text = PropertyResponse(val, req).json
+            elif req.get_media()['Action'] == 'override' :
+                t = req.get_media()['Parameters']
+                safety_dev.setoverride(float(t)) 
+                resp.text = PropertyResponse(True, req).json
         except Exception as ex:
             resp.text = PropertyResponse(None, req,
-                            DriverException(0x500, 'Safetymonitor.Issafe failed', ex)).json
+                DriverException(0x500, 'Safetymonitor.Action failed', ex)).json
 
 @before(PreProcessRequest(maxdev))
 class commandblind:
@@ -143,7 +145,7 @@ class name():
 @before(PreProcessRequest(maxdev))
 class supportedactions:
     def on_get(self, req: Request, resp: Response, devnum: int):
-        resp.text = PropertyResponse(['override'], req).json  # Not PropertyNotImplemented
+        resp.text = PropertyResponse(['stat35m','stat25m','override'], req).json  # Not PropertyNotImplemented
 
 @before(PreProcessRequest(maxdev))
 class issafe:
